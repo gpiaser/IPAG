@@ -8,6 +8,8 @@ Description: Provides a collection of intuitive and user-friendly functions
     means, differences in means, proportions, and odds ratios. The package also
     includes tools for linear regression analysis and several real-world datasets
     intended for teaching and applied statistical inference.
+URL: https://github.com/gpiaser/IPAG
+BugReports: https://github.com/gpiaser/IPAG/issues
 Imports:
     stats,
 Suggests:
