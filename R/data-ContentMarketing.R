@@ -1,0 +1,43 @@
+#' Content Marketing Dataset
+#'
+#' Dataset from Koob (2021), "Determinants of content marketing effectiveness:
+#' Conceptual framework and empirical findings from a managerial perspective."
+#' PloS ONE, 16(4), e0249457.
+#'
+#' @format A data frame with the following variables:
+#' \describe{
+#'   \item{Firm}{The company’s identification number.}
+#'   \item{CMEFFECT}{Effectiveness of the content marketing strategy.
+#'     Marketing and communications executives rated the degree of effectiveness
+#'     on a scale from 1 to 5 based on their perception and expertise.}
+#'   \item{CMSTRAT}{Content marketing strategy context.
+#'     Four-item scale measuring whether the organization had a defined,
+#'     comprehensible, and long-term content marketing strategy.
+#'     Rated from 1 ("totally disagree") to 5 ("totally agree").}
+#'   \item{CPROD}{Content production context.
+#'     Reflects the organization's efforts to optimize content value for customers,
+#'     meet content quality standards, and plan and create content systematically.}
+#'   \item{CDIST1}{Content distribution context / intermediate number of media platforms.
+#'     Measures the number of media platforms used to distribute content.}
+#'   \item{CDIST2}{Content distribution context / joint deployment of print and digital platforms.
+#'     Measures the simultaneous use of print and digital media for content distribution.}
+#'   \item{CPROM}{Content Promotion Context.
+#'     Measures the importance attached to content promotion.
+#'     Respondents indicated the share of total content marketing investment devoted to promotion activities.}
+#'   \item{CMPERME}{Content Marketing Performance Measurement Context.
+#'     Captures the frequency of content marketing performance measurement across
+#'     print and digital platforms and the use of performance data to guide improvement.}
+#'   \item{CMORG}{Content Marketing Organization.
+#'     Captures structural specialization, autonomy in content marketing, and
+#'     processes and systems that enable specialization.}
+#'   \item{SIZE}{Organization size.
+#'     Three dummy variables categorize organizations by number of employees:
+#'     "Tiny" (250-499), "Small" (500-999), "Medium" (1,000-4,999), "Big" (>=5,000).}
+#'   \item{SECTOR}{Sector affiliation.
+#'     Dummy variable distinguishing organizations in the "industrial" or "service" sector.}
+#' }
+#'
+#' @usage data(ContentMarketing)
+#' @source Koob, C. (2021). Determinants of content marketing effectiveness: Conceptual framework and empirical findings from a managerial perspective. PloS ONE, 16(4), e0249457.
+"ContentMarketing"
+

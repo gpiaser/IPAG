@@ -1,0 +1,21 @@
+Package: IPAG
+Title: Tools for IPAG Courses
+Version: 0.1.0
+Authors@R: 
+    person("Gwenaël", "Piaser", email = "piaser@gmail.com", role = c("aut", "cre"))
+Description: Provides a collection of intuitive and user-friendly functions
+    for computing confidence intervals for common statistical tasks, including
+    means, differences in means, proportions, and odds ratios. The package also
+    includes tools for linear regression analysis and several real-world datasets
+    intended for teaching and applied statistical inference.
+Imports:
+    stats,
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
