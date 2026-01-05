@@ -27,7 +27,7 @@ You can install the development version of IPAG from GitHub:
 
 ```r
 # install.packages("remotes")
-remotes::install_github("username/IPAG")
+remotes::install_github("gpiaser/IPAG")
 ```
 
 Once available on CRAN, you will be able to install it with:
