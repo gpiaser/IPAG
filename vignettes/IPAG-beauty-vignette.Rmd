@@ -1,0 +1,288 @@
+---
+title: "Teaching Evaluation Analysis with IPAG"
+author: "IPAG Package"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Teaching Evaluation Analysis with IPAG}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+## Introduction
+
+This vignette illustrates the use of the **IPAG** package for statistical analysis using the `Beauty` dataset. This dataset, from Hamermesh and Parker (2005), examines the relationship between university instructors' physical attractiveness and their student evaluations.
+
+The IPAG package provides simple and pedagogical tools for:
+
+- Computing confidence intervals for means and proportions
+- Comparing means between groups
+- Performing linear regressions with concise output
+- Working with odds ratios
+
+All confidence intervals are computed at the 99% level by default, with the option to specify alternative confidence levels.
+
+## Loading the package and data
+
+```{r}
+library(IPAG)
+data(Beauty)
+```
+
+The `Beauty` dataset contains `r nrow(Beauty)` observations corresponding to university courses. Here's an overview of the main variables:
+
+```{r}
+str(Beauty)
+```
+
+Key variables:
+
+- `score`: Average professor evaluation score (1 = very unsatisfactory, 5 = excellent)
+- `bty_avg`: Average beauty rating of the professor (scale from 1 to 10)
+- `age`: Age of the professor
+- `gender`: Gender of the professor (female/male)
+- `rank`: Academic rank (teaching/tenure track/tenured)
+
+## Descriptive Statistics
+
+### Average evaluation score
+
+Let's compute the 99% confidence interval for the average evaluation score:
+
+```{r}
+mean_ci(Beauty$score)
+```
+
+On average, professors receive a score of approximately `r round(mean(Beauty$score), 2)` out of 5. The 99% confidence interval indicates that we can be confident the population mean score falls within this range.
+
+### Average beauty rating
+
+Similarly for beauty ratings:
+
+```{r}
+mean_ci(Beauty$bty_avg)
+```
+
+The average beauty rating is approximately `r round(mean(Beauty$bty_avg), 2)` out of 10.
+
+## Group Comparisons
+
+### Score difference by gender
+
+Is there a significant difference in evaluations between male and female professors?
+
+```{r}
+score_female <- Beauty$score[Beauty$gender == "female"]
+score_male <- Beauty$score[Beauty$gender == "male"]
+
+mean_diff_ci(score_male, score_female)
+```
+
+The confidence interval for the difference in means allows us to test whether male professors receive different scores than female professors. If the interval contains zero, the difference is not statistically significant at the chosen level.
+
+### Beauty rating by gender
+
+Let's also compare beauty ratings:
+
+```{r}
+bty_female <- Beauty$bty_avg[Beauty$gender == "female"]
+bty_male <- Beauty$bty_avg[Beauty$gender == "male"]
+
+mean_diff_ci(bty_male, bty_female)
+```
+
+## Proportions and Categorical Comparisons
+
+### Proportion of highly-rated professors
+
+Let's create a binary variable to identify professors with a score above 4:
+
+```{r}
+high_score <- sum(Beauty$score > 4)
+total <- nrow(Beauty)
+
+prop_ci(trials = total, successes = high_score)
+```
+
+Approximately `r round(100 * high_score / total, 1)`% of courses receive a score above 4.
+
+### Contingency table: Beauty and evaluation
+
+Let's create categories to analyze the relationship between beauty and evaluation:
+
+```{r}
+# Create categorical variables
+Beauty$high_beauty <- Beauty$bty_avg > median(Beauty$bty_avg)
+Beauty$high_eval <- Beauty$score > 4
+
+# Contingency table
+table_data <- table(Beauty$high_beauty, Beauty$high_eval)
+print(table_data)
+```
+
+Let's compute the odds ratio to measure the association:
+
+```{r}
+# Extract table cells
+a <- table_data[2, 2]  # High beauty AND high evaluation
+b <- table_data[2, 1]  # High beauty AND low evaluation
+c <- table_data[1, 2]  # Low beauty AND high evaluation
+d <- table_data[1, 1]  # Low beauty AND low evaluation
+
+oddsratio_ci(a = a, b = b, c = c, d = d)
+```
+
+An odds ratio greater than 1 suggests that more attractive professors are more likely to receive good evaluations.
+
+## Regression Analysis
+
+### Simple regression: Beauty and evaluation
+
+Let's examine the linear relationship between beauty and evaluation score:
+
+```{r}
+linear_regress(score ~ bty_avg, data = Beauty)
+```
+
+This simple regression shows the effect of beauty on evaluation score. The coefficient of `bty_avg` indicates how much the evaluation score increases on average for each additional point of beauty.
+
+### Multiple regression: Controlling for characteristics
+
+Let's add control variables for a more complete analysis:
+
+```{r}
+linear_regress(score ~ bty_avg + age + gender, data = Beauty)
+```
+
+This regression controls for the professor's age and gender. The adjusted R² tells us what proportion of the variance in score is explained by the model.
+
+### Full model
+
+Let's include more explanatory variables:
+
+```{r}
+linear_regress(score ~ bty_avg + age + gender + rank + cls_perc_eval + cls_students, 
+               data = Beauty)
+```
+
+This more complex model includes:
+
+- `rank`: The professor's academic rank
+- `cls_perc_eval`: The percentage of students who participated in the evaluation
+- `cls_students`: The total number of students in the course
+
+## Subgroup Analyses
+
+### Effect of beauty by class level
+
+Let's compare the effect of beauty for lower vs upper level courses:
+
+```{r}
+# Lower level courses
+Beauty_lower <- Beauty[Beauty$cls_level == "lower", ]
+linear_regress(score ~ bty_avg, data = Beauty_lower)
+
+# Upper level courses
+Beauty_upper <- Beauty[Beauty$cls_level == "upper", ]
+linear_regress(score ~ bty_avg, data = Beauty_upper)
+```
+
+### Differential effect by gender
+
+Let's analyze whether the effect of beauty differs between male and female professors:
+
+```{r}
+# Male professors
+Beauty_male <- Beauty[Beauty$gender == "male", ]
+linear_regress(score ~ bty_avg, data = Beauty_male)
+
+# Female professors
+Beauty_female <- Beauty[Beauty$gender == "female", ]
+linear_regress(score ~ bty_avg, data = Beauty_female)
+```
+
+## Custom Confidence Intervals
+
+By default, IPAG computes 99% confidence intervals. To use a different level (e.g., 95%):
+
+```{r}
+mean_ci(Beauty$score, level = 0.95)
+```
+
+```{r}
+linear_regress(score ~ bty_avg + gender, data = Beauty, level = 0.95)
+```
+
+## Complementary Visualizations
+
+While IPAG focuses on statistical inference, it's useful to visualize the data:
+
+```{r}
+# Scatter plot
+plot(Beauty$bty_avg, Beauty$score,
+     xlab = "Average beauty rating",
+     ylab = "Evaluation score",
+     main = "Relationship between beauty and evaluation",
+     pch = 16, col = rgb(0, 0, 0, 0.3))
+
+# Add regression line
+abline(lm(score ~ bty_avg, data = Beauty), col = "red", lwd = 2)
+```
+
+```{r}
+# Score comparison by gender
+boxplot(score ~ gender, data = Beauty,
+        xlab = "Gender",
+        ylab = "Evaluation score",
+        main = "Distribution of scores by gender",
+        col = c("pink", "lightblue"))
+```
+
+## Interpretation and Conclusions
+
+This analysis illustrates several important findings:
+
+1. **Beauty effect**: There is a positive relationship between instructors' physical attractiveness and their evaluation scores, even after controlling for other variables.
+
+2. **Control variables**: Age, gender, and academic rank also play a role in evaluations.
+
+3. **Robustness**: Wide confidence intervals (99%) give us a conservative view of uncertainty around our estimates.
+
+4. **Heterogeneity**: The effect of beauty may vary across analyzed subgroups.
+
+## IPAG Package Design Principles
+
+The IPAG package follows several design principles:
+
+- **Transparency**: All functions rely on well-established R functions (`t.test()`, `binom.test()`, `lm()`, `fisher.test()`).
+
+- **Consistency**: Uniform naming convention and clear display methods.
+
+- **Readability**: Interpretable results without requiring deep knowledge of R object structures.
+
+- **Pedagogical use**: Designed for teaching and applications where clarity takes precedence over extensibility.
+
+## References
+
+Hamermesh, D. S., & Parker, A. (2005). Beauty in the classroom: Instructors' pulchritude and putative pedagogical productivity. *Economics of Education Review*, 24(4), 369–376. https://doi.org/10.1016/j.econedurev.2004.07.013
+
+## Going Further
+
+For more information about the IPAG package:
+
+- Function documentation: `?mean_ci`, `?linear_regress`, etc.
+- Other available datasets: `data(package = "IPAG")`
+- Source code: https://github.com/gpiaser/IPAG
+
+---
+
+This vignette was created with IPAG package version `r packageVersion("IPAG")`.
